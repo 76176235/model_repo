@@ -1,0 +1,58 @@
+
+name: "ctc"
+backend: "python"
+max_batch_size: 32 
+
+parameters [
+  {
+    key: "vocabulary",
+    value: { string_value: "tensorrt/20240409_dc_chinese_exp/words.txt"}
+  },
+  {
+    key: "bidecoder",
+    value: { string_value: "0"}
+  },
+  {
+    key: "lm_path",
+    value: { string_value: "None"}
+  },
+  {
+   key: "hotwords_path",
+   value : { string_value: "None"}
+  }
+]
+
+input [
+  {
+    name: "encoder_out_lens"
+    data_type: TYPE_INT32
+    dims: [1]
+    reshape: { shape: [ ] }
+  },
+  {
+    name: "batch_log_probs"
+    data_type: TYPE_FP32
+    dims: [-1, 20] #[-1, beam_size]
+  },
+  {
+    name: "batch_log_probs_idx"
+    data_type: TYPE_INT32
+#    data_type: TYPE_INT64
+    dims: [-1, 20]
+  }
+]
+
+output [
+  {
+    name: "OUTPUT0"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+
+instance_group [
+  {
+    count: 6
+    kind: KIND_CPU
+  }
+]
